@@ -14,28 +14,26 @@ class Rover
     public $estatF = true;
 
     public $tauler = array(array());
-    public $offset = 5;
+    public $offset = 3;
     public $fletxes = ['^', '>', 'v', '<'];
 
-    public function __construct($ordres, $ample, $alt, $x, $y, $orientacio){
-        $this->ordres = strtoupper($ordres);
+    public function __construct($ample, $alt, $x, $y, $orientacio){        
         $this->ample = $ample;
         $this->alt = $alt;
-        $this->x = $x;
-        $this->y = $y;
+        $this->x = $this->offset + $x;
+        $this->y = $this->offset + $y;
         $this->orientacio = strtoupper($orientacio);
 
         $this->inicialitzaTauler();
-
-        $this->tauler[$this->offset + $this->x][$this->offset + $this->y] = $this->fletxes[array_search($this->orientacio, $this->orientacions)];
-        $this->executaOrdres($this->ordres);
+        $this->tauler[$this->x][$this->y] = $this->fletxes[array_search($this->orientacio, $this->orientacions)];       
         
     }
 
     public function executaOrdres($ordres)
     {
+        $this->ordres = strtoupper($ordres);
         $this->estatF = true;
-        $peticions = str_split($ordres);
+        $peticions = str_split($this->ordres);
         foreach($peticions as $peticio){
             switch ($peticio) {
                 case 'R':
@@ -43,7 +41,7 @@ class Rover
                     $posOrientacioActual = array_search($this->orientacio, $this->orientacions);
                     //echo "posOrientacioActual {$posOrientacioActual}<br />";
                     $posOrientacioActual++;
-                    if($posOrientacioActual >= count($this->orientacions) - 1) {
+                    if($posOrientacioActual >= count($this->orientacions)) {
                         $posOrientacioActual = 0;
                     }
                     $this->orientacio = $this->orientacions[$posOrientacioActual];
@@ -63,40 +61,41 @@ class Rover
                 case 'A':
                     switch ($this->orientacio) {
                         case 'N':
-                            $this->y++;
-                            break;
-                        case 'E':
                             $this->x++;
                             break;
-                        case 'S':
-                            $this->y--;
+                        case 'E':
+                            $this->y++;
                             break;
-                        case 'W':
+                        case 'S':
                             $this->x--;
                             break;
+                        case 'W':
+                            $this->y--;
+                            break;
                     }   
-                    if ($this->x > $this->ample || $this->x < 0 || $this->y > $this->alt  || $this->y < 0 ){
+                    if ($this->x - $this->offset >= $this->ample || $this->x < $this->offset || $this->y - $this->offset >= $this->alt  || $this->y < $this->offset ){
                         $this->estatF = false;     
                     }
                     //echo "x: {$this->x}, y: {$this->y}, estat: {$this->estatF}<br />";
                     //$this->tauler[$this->x][$this->y] = $this->fletxes[array_search($this->orientacio, $this->orientacions)];              
-                    $this->tauler[$this->offset + $this->x][$this->offset + $this->y] = $this->fletxes[array_search($this->orientacio, $this->orientacions)];
+                    $this->tauler[$this->x][$this->y] = $this->fletxes[array_search($this->orientacio, $this->orientacions)];
                     break;
                 default:
                     $this->estatF = false;   
             }        
 
         }
+        return [$this->estatF, $this->x - $this->offset, $this->y - $this->offset, $this->orientacio];
     }
 
     public function inicialitzaTauler(){
-        for ($i = 0; $i <= $this->offset + $this->ample -1 + $this->offset; $i++) {
-            for ($j = 0; $j <= $this->offset + $this->alt -1 + $this->offset; $j++) {
+        for ($i = 0; $i <= $this->offset + $this->alt -1 + $this->offset; $i++) {
+            for ($j = 0; $j <= $this->offset + $this->ample -1 + $this->offset; $j++) {
                 $this->tauler[$i][$j] = '.';
             }
         }
-        for ($i = $this->offset; $i <= $this->offset + $this->ample - 1; $i++) {
-            for ($j = $this->offset; $j <= -1 + $this->offset + $this->alt - 1; $j++) {
+        for ($i = $this->offset; $i <= $this->offset + $this->alt - 1; $i++) {
+            for ($j = $this->offset; $j <= -1 + $this->offset + $this->ample; $j++) {
                 $this->tauler[$i][$j] = '_';
             }
         }
@@ -104,10 +103,11 @@ class Rover
 
     public function mostraTauler(){
         foreach(array_reverse($this->tauler) as $filera){
+            echo "<p style=\"font-family: 'Roboto Mono', monospace\">";
             foreach($filera as $cuadre){
                 echo ' '.$cuadre;
             }
-            echo "<br />";
+            echo "</p>";
         }
     }
 }
