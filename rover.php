@@ -13,6 +13,10 @@ class Rover
     
     public $estatF = true;
 
+    public $tauler = array(array());
+    public $offset = 5;
+    public $fletxes = ['^', '>', 'v', '<'];
+
     public function __construct($ordres, $ample, $alt, $x, $y, $orientacio){
         $this->ordres = strtoupper($ordres);
         $this->ample = $ample;
@@ -21,6 +25,9 @@ class Rover
         $this->y = $y;
         $this->orientacio = strtoupper($orientacio);
 
+        $this->inicialitzaTauler();
+
+        $this->tauler[$this->offset + $this->x][$this->offset + $this->y] = $this->fletxes[array_search($this->orientacio, $this->orientacions)];
         $this->executaOrdres($this->ordres);
         
     }
@@ -71,12 +78,36 @@ class Rover
                     if ($this->x > $this->ample || $this->x < 0 || $this->y > $this->alt  || $this->y < 0 ){
                         $this->estatF = false;     
                     }
-                    //echo "x: {$this->x}, y: {$this->y}, estat: {$this->estatF}<br />";              
+                    //echo "x: {$this->x}, y: {$this->y}, estat: {$this->estatF}<br />";
+                    //$this->tauler[$this->x][$this->y] = $this->fletxes[array_search($this->orientacio, $this->orientacions)];              
+                    $this->tauler[$this->offset + $this->x][$this->offset + $this->y] = $this->fletxes[array_search($this->orientacio, $this->orientacions)];
                     break;
                 default:
                     $this->estatF = false;   
             }        
 
+        }
+    }
+
+    public function inicialitzaTauler(){
+        for ($i = 0; $i <= $this->offset + $this->ample -1 + $this->offset; $i++) {
+            for ($j = 0; $j <= $this->offset + $this->alt -1 + $this->offset; $j++) {
+                $this->tauler[$i][$j] = '.';
+            }
+        }
+        for ($i = $this->offset; $i <= $this->offset + $this->ample - 1; $i++) {
+            for ($j = $this->offset; $j <= -1 + $this->offset + $this->alt - 1; $j++) {
+                $this->tauler[$i][$j] = '_';
+            }
+        }
+    }
+
+    public function mostraTauler(){
+        foreach(array_reverse($this->tauler) as $filera){
+            foreach($filera as $cuadre){
+                echo ' '.$cuadre;
+            }
+            echo "<br />";
         }
     }
 }

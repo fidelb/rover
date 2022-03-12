@@ -10,6 +10,7 @@ if (isset($_REQUEST['ordres'])) {
     } else {
         echo "resultat execució de ordres: ERROR. EN ALGUN MOMENT SUPERAT EL TAULER. <br />"; 
     }
+    $rover1->mostraTauler();
 }
 ?>
 
