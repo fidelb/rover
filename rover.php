@@ -105,7 +105,11 @@ class Rover
         foreach(array_reverse($this->tauler) as $filera){
             echo "<p style=\"font-family: 'Roboto Mono', monospace\">";
             foreach($filera as $cuadre){
-                echo ' '.$cuadre;
+                if ($cuadre == "_"){
+                    echo '<span style="background-color: #77dd77">&nbsp;'.$cuadre."&nbsp;</span>";
+                } else {
+                    echo '<span>&nbsp;'.$cuadre."&nbsp;</span>";
+                }
             }
             echo "</p>";
         }
